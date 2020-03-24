@@ -22,8 +22,6 @@ pub struct Resource {
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct ResourceQuery {
-    #[serde(deserialize_with = "deserialize_object_id", default)]
-    _id: Option<ObjectId>,
     #[serde(default)]
     keyword: String,
 }

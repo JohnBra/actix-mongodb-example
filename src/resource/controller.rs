@@ -29,11 +29,7 @@ pub async fn list_resource(
 ) -> Result<HttpResponse, BusinessError> {
     let query = query.into_inner();
 
-    // 构造查询参数
     let mut d: Document = doc! {};
-    if query._id.is_some() {
-        d.insert("_id", query._id.unwrap());
-    }
 
     if !query.keyword.is_empty() {
         d.insert("$or", bson::Bson::Array(vec![
