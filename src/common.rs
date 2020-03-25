@@ -1,11 +1,10 @@
 use actix_web::{HttpResponse, error};
-use serde::{Serialize, Deserialize, Serializer, Deserializer, de};
+use serde::{Serialize, Deserialize, Serializer};
 use bson::Document;
 use bson::ordered::OrderedDocument;
 use mongodb::Cursor;
 use thiserror::Error;
 use bson::oid::ObjectId;
-use core::fmt;
 
 /// error format "code#message"
 #[derive(Error, Debug)]
@@ -90,29 +89,6 @@ pub fn serialize_object_id<S>(oid: &Option<ObjectId>, s: S) -> Result<S::Ok, S::
         Some(v) => s.serialize_str(&v),
         None => s.serialize_none()
     }
-}
-
-pub fn deserialize_object_id<'de, D>(deserializer: D) -> Result<Option<ObjectId>, D::Error>
-    where D: Deserializer<'de> {
-
-    struct JsonOptionObjectIdVisitor;
-
-    impl<'de> de::Visitor<'de> for JsonOptionObjectIdVisitor {
-        type Value = Option<ObjectId>;
-
-        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str("an object id hash value")
-        }
-
-        fn visit_str<E>(self, v: &str) -> Result<Self::Value, E> where E: de::Error {
-            if v.is_empty() {
-                return Ok(None);
-            }
-            Ok(ObjectId::with_string(v).ok())
-        }
-    }
-
-    deserializer.deserialize_any(JsonOptionObjectIdVisitor)
 }
 
 pub fn struct_to_document<'a, T: Sized + Serialize + Deserialize<'a>>(
