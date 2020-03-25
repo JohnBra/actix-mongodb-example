@@ -1,11 +1,12 @@
 use serde::{Serialize, Deserialize};
 use bson::oid::ObjectId;
 
-pub use controller::*;
 use crate::common::*;
+pub use controller::*;  // TODO check if can be omitted
+pub use service::*; // TODO check if can be omitted
 
 mod controller;
-
+mod service;
 
 impl Resource {
     pub const COLLECTION_NAME: &'static str = "resource";

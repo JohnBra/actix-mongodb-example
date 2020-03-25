@@ -35,17 +35,9 @@ async fn main() -> std::io::Result<()>{
 
     let binding_address = "0.0.0.0:8000";
     HttpServer::new(|| App::new()
-        .app_data(
-              web::Json::<Resource>::configure(|cfg| {
-                  cfg.error_handler(|err, req| {
-                      log::error!("json extractor error, path={}, {}", req.uri(), err);
-                      BusinessError::ArgumentError.into()
-                  })
-              })
-        )
         .service(
             web::scope("/resource")
-                .route("", web::get().to(resource::list_resource))
+                .route("", web::get().to(resource::get_all_resources))
                 .route("", web::post().to(resource::save_resource))
                 .route("{id}", web::put().to(resource::update_resource))
                 .route("{id}", web::delete().to(resource::remove_resource))
