@@ -39,7 +39,7 @@ async fn main() -> std::io::Result<()>{
             web::scope("/resource")
                 .route("", web::get().to(resource::get_all_resources))
                 .route("", web::post().to(resource::save_resource))
-                .route("{id}", web::put().to(resource::update_resource))
+                .route("{id}", web::put().to(resource::db_update_resource))
                 .route("{id}", web::delete().to(resource::remove_resource))
         ))
         .bind(binding_address)

@@ -11,7 +11,7 @@ pub async fn save_resource(
     resource: web::Json<Resource>
 ) -> Result<HttpResponse, Error> {
     let resource: Resource = resource.into_inner();
-    let res = web::block(move || service::save_resource(resource))
+    let res = web::block(move || service::db_create_resource(resource))
         .await
         .map(|_result| HttpResponse::Ok().json(_result))
         .map_err(|_| HttpResponse::new(http::StatusCode::INTERNAL_SERVER_ERROR));
@@ -20,76 +20,47 @@ pub async fn save_resource(
 
 pub async fn get_resource(
     req: HttpRequest
-) -> impl Responder {
-    let coll = collection(Resource::COLLECTION_NAME);
+) -> Result<HttpResponse, Error> {
     let id = req.match_info().get("id").unwrap_or("");
-    let result = coll.find_one(Some(doc! {"_id" => &id}), None);
-    HttpResponse::Ok().json(result)
+    let res = web::block(move || service::db_read_resource(&id))
+        .await
+        .map(|_result| HttpResponse::Ok().json(_result))
+        .map_err(|_| HttpResponse::new(http::StatusCode::INTERNAL_SERVER_ERROR));
+    Ok(HttpResponse::Ok().json(res))
 }
 
 
-pub async fn get_all_resources(
-    query: web::Json<ResourceQuery>
-) -> impl Responder {
-    let query = query.into_inner();
+pub async fn get_all_resources() -> Result<HttpResponse, Error> {
+    let res = web::block(move || service::db_read_all_resources())
+        .await
+        .map(|_result| HttpResponse::Ok().json(_result))
+        .map_err(|_| HttpResponse::new(http::StatusCode::INTERNAL_SERVER_ERROR));
 
-    let mut d: Document = doc! {};
-
-    if !query.keyword.is_empty() {
-        d.insert("$or", bson::Bson::Array(vec![
-            doc! {"some_key_1": {"$regex": & query.keyword, "$options": "i"}}.into(),
-            doc! {"some_key_2": {"$regex": & query.keyword, "$options": "i"}}.into(),
-            doc! {"some_key_3": {"$regex": & query.keyword, "$options": "i"}}.into(),
-        ]));
-    }
-
-    let coll = collection(Resource::COLLECTION_NAME);
-    let cursor = coll.find(Some(d), None);
-    let result = cursor.map(|mut x| x.as_vec::<Resource>());
-
-    HttpResponse::Ok().json(result)
+    Ok(HttpResponse::Ok().json(res))
 }
 
 pub async fn update_resource(
     req: HttpRequest,
     resource: web::Json<Resource>
-) -> impl Responder {
+) -> Result<HttpResponse, Error> {
     let id = req.match_info().get("id").unwrap_or("");
     let resource = resource.into_inner();
-    let filter = doc! {"_id" => id};
-    let update_doc = doc! {"$set": struct_to_document(&resource).unwrap()};
+    let res = web::block(move || service::db_update_resource(id, resource))
+        .await
+        .map(|_result| HttpResponse::Ok().json(_result))
+        .map_err(|_| HttpResponse::new(http::StatusCode::INTERNAL_SERVER_ERROR));
 
-    let effect = match collection(Resource::COLLECTION_NAME).update_one(filter, update_doc, None) {
-        Ok(result) => {
-            info!("update resource, id={}, effect={}", id, result.modified_count);
-            result.modified_count
-        }
-        Err(e) => {
-            error!("update_resource, failed to visit db, id={}, {}", id, e);
-            return Err(anyhow!(e));
-        }
-    };
-
-    HttpResponse::Ok().json(effect)
+    Ok(HttpResponse::Ok().json(res))
 }
 
 pub async fn remove_resource(
     req: HttpRequest
-) -> impl Responder {
+) -> Result<HttpResponse, Error> {
     let id = req.match_info().get("id").unwrap_or("");
-    let filter = doc! {"_id" => ObjectId::with_string(id).unwrap()};
-    let coll = collection(Resource::COLLECTION_NAME);
+    let res = web::block(move || service::db_delete_resource(id))
+        .await
+        .map(|_result| HttpResponse::Ok().json(_result))
+        .map_err(|_| HttpResponse::new(http::StatusCode::INTERNAL_SERVER_ERROR));
 
-    let effect = match coll.delete_one(filter, None) {
-        Ok(result) => {
-            info!("delete resource, id={}, effect={}", id, result.deleted_count);
-            result.deleted_count
-        }
-        Err(e) => {
-            error!("remove_resource, failed to visit db, id={}, {}", id, e);
-            return Err(anyhow!(e));
-        }
-    };
-
-    HttpResponse::Ok().json(effect)
+    Ok(HttpResponse::Ok().json(res))
 }
