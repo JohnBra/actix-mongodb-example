@@ -5,10 +5,8 @@ extern crate anyhow;
 
 use lazy_static::lazy_static;
 use mongodb::{Client, Collection};
-use actix_web::{web, App, HttpServer, FromRequest};
+use actix_web::{web, App, HttpServer};
 
-use crate::resource::Resource;
-use crate::common::*;
 use crate::logging::*;
 
 mod common;
@@ -37,10 +35,11 @@ async fn main() -> std::io::Result<()>{
     HttpServer::new(|| App::new()
         .service(
             web::scope("/resource")
-                .route("", web::get().to(resource::get_all_resources))
-                .route("", web::post().to(resource::save_resource))
-                .route("{id}", web::put().to(resource::db_update_resource))
-                .route("{id}", web::delete().to(resource::remove_resource))
+                .route("", web::get().to(resource::get_all))
+                .route("", web::post().to(resource::save))
+                .route("{id}", web::get().to(resource::get))
+                .route("{id}", web::put().to(resource::update))
+                .route("{id}", web::delete().to(resource::delete))
         ))
         .bind(binding_address)
         .expect(&format!("Can not bind to {}", binding_address) )

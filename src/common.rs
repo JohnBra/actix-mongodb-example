@@ -1,9 +1,7 @@
-use actix_web::{HttpResponse, error};
 use serde::{Serialize, Deserialize, Serializer};
 use bson::Document;
 use bson::ordered::OrderedDocument;
 use mongodb::Cursor;
-use thiserror::Error;
 use bson::oid::ObjectId;
 
 
