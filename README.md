@@ -1,6 +1,6 @@
 # RUST RESTful ACTIX WEB MONGODB EXAMPLE / BOILERPLATE
 
-A minimal rust web server example/boilerplate with RESTful CRUD functionality, utilizing actix web and mongdb.
+A small rust web server example/boilerplate with RESTful CRUD functionality, utilizing actix web and mongdb.
 
 Inspired by [mehmetsefabalik/rust-mongodb-example](https://github.com/mehmetsefabalik/rust-mongodb-example).
 
