@@ -1,0 +1,26 @@
+version: '3'
+services:
+  web-api:
+    build: .
+    ports:
+      - "9001:9001"
+    depends_on:
+      - tag-data-db
+    networks:
+      - default
+
+  example-db:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - example-db:/example-db/db
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  db:
