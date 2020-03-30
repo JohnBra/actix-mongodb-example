@@ -73,6 +73,5 @@ pub fn db_delete_resource(
     if effect.unwrap().deleted_count < 1 {
         ()
     }
-
     Ok(())
 }

@@ -29,7 +29,6 @@ pub async fn get_all() -> Result<Result<HttpResponse, HttpResponse>, Error> {
         .await
         .map(|_result| HttpResponse::Ok().json(_result))
         .map_err(|_| HttpResponse::new(http::StatusCode::INTERNAL_SERVER_ERROR));
-
     Ok(res)
 }
 
@@ -42,7 +41,6 @@ pub async fn update(
         .await
         .map(|_result| HttpResponse::Ok().json(_result))
         .map_err(|_| HttpResponse::new(http::StatusCode::INTERNAL_SERVER_ERROR));
-
     Ok(res)
 }
 
@@ -53,6 +51,5 @@ pub async fn delete(
         .await
         .map(|_result| HttpResponse::Ok().json(_result))
         .map_err(|_| HttpResponse::new(http::StatusCode::INTERNAL_SERVER_ERROR));
-
     Ok(res)
 }
