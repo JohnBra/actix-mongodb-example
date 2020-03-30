@@ -6,6 +6,7 @@ extern crate anyhow;
 use lazy_static::lazy_static;
 use mongodb::{Client, Collection};
 use actix_web::{web, App, HttpServer};
+use std::env;
 
 use crate::logging::*;
 
@@ -27,11 +28,25 @@ fn collection(coll_name: &str) -> Collection {
     MONGO.database("db_name").collection(coll_name)
 }
 
+fn get_binding_address() -> String {
+    let host = match env::var("HOST") {
+        Ok(val) => val,
+        Err(e) => panic!("Couldn't interpret required 'HOST' env variable. Terminating...")
+    };
+
+    let port = match env::var("PORT") {
+        Ok(val) => val,
+        Err(e) => panic!("Couldn't interpret required 'PORT' env variable. Terminating...")
+    };
+
+    (host + ":" + &port)
+}
+
 #[actix_rt::main]
 async fn main() -> std::io::Result<()>{
     init_logger();
+    let binding_address = get_binding_address();
 
-    let binding_address = "0.0.0.0:8000";
     HttpServer::new(|| App::new()
         .service(
             web::scope("/resource")
@@ -41,8 +56,8 @@ async fn main() -> std::io::Result<()>{
                 .route("{id}", web::put().to(resource::update))
                 .route("{id}", web::delete().to(resource::delete))
         ))
-        .bind(binding_address)
-        .expect(&format!("Can not bind to {}", binding_address) )
+        .bind(&binding_address)
+        .expect(&format!("Can not bind to {}", &binding_address) )
         .run()
         .await
 }
