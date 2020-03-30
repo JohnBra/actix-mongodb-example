@@ -1,6 +1,6 @@
-# RUST ACTIX WEB MONGODB EXAMPLE / BOILERPLATE
+# RUST RESTful ACTIX WEB MONGODB EXAMPLE / BOILERPLATE
 
-A minimal rust web server example/boilerplate with CRUD functionality utilizing actix web and mongdb.
+A minimal rust web server example/boilerplate with RESTful CRUD functionality, utilizing actix web and mongdb.
 
 Inspired by [mehmetsefabalik/rust-mongodb-example](https://github.com/mehmetsefabalik/rust-mongodb-example).
 
@@ -11,12 +11,20 @@ Inspired by [mehmetsefabalik/rust-mongodb-example](https://github.com/mehmetsefa
 
 ## Functionality
 Exposes CRUD functionality for `resource`:
-- `GET /resource` retrieve all resources
-- `POST /resource` save a resource on the database
-- `GET /resource/{id}` retrieve a resource by id
-- `PUT /resource/{id}` update a resource by id
-- `DELETE /resource/{id}` delete a resource by id
+- `GET /resource` retrieve all `resource` objects
+- `POST /resource` save a `resource` on the database
+- `GET /resource/{id}` retrieve a `resource` by id
+- `PUT /resource/{id}` update a `resource` by id
+- `DELETE /resource/{id}` delete a `resource` by id
 
+`POST` and `PUT` requests require the body to look like the following:
+```json5
+{
+  "some_key_1": "a",
+  "some_key_2": "b",
+  "some_key_3": "c"
+}
+```
 ## Usage
 
 ### Local
@@ -25,9 +33,9 @@ Exposes CRUD functionality for `resource`:
 3. run `./target/release/actix-mongodb-boilerplate`
 
 ### Docker
-1. docker-compose up --build
+1. run `docker-compose up --build`
 
-# HOW TO TEST
+### API commands
 
 `curl http://localhost:3000/hello?name=joe`
 
