@@ -1,11 +1,16 @@
 version: '3'
 services:
-  web-api:
+  rust-api:
     build: .
     ports:
       - "9001:9001"
     depends_on:
       - example-db
+    environment:
+      - "HOST:0.0.0.0"
+      - "PORT:9001"
+      - "MONGO_HOST:example-db"
+      - "MONGO_PORT:27017"
     networks:
       - default
 

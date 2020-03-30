@@ -2,8 +2,7 @@ use bson::{oid::ObjectId, Document};
 use log::*;
 
 use super::Resource;
-
-use crate::collection;
+use crate::db::*;
 use crate::common::*;
 
 
@@ -32,6 +31,7 @@ pub fn db_read_resource(
     let res = coll.find_one(
         Some(doc! {"_id" => ObjectId::with_string(id).unwrap()}),
         None);
+    info!("Retrieving resource with id: {}", id);
     Ok(res.unwrap())
 }
 
@@ -40,6 +40,7 @@ pub fn db_read_all_resources(
     let coll = collection(Resource::COLLECTION_NAME);
     let cursor = coll.find(None, None);
     let res = cursor.map(|mut x| x.as_vec::<Resource>());
+    info!("Retrieving all resource objects");
     Ok(res.unwrap())
 }
 
@@ -60,6 +61,7 @@ pub fn db_update_resource(
         Some(doc! {"_id" => ObjectId::with_string(id).unwrap()}),
         None
     );
+    info!("Updating resource with id: {}", id);
     Ok(res.unwrap())
 }
 
@@ -73,5 +75,6 @@ pub fn db_delete_resource(
     if effect.unwrap().deleted_count < 1 {
         ()
     }
+    info!("Deleting resource with id: {}", id);
     Ok(())
 }
