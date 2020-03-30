@@ -5,10 +5,8 @@ extern crate anyhow;
 
 use lazy_static::lazy_static;
 use mongodb::{Client, Collection};
-use actix_web::{web, App, HttpServer, FromRequest};
+use actix_web::{web, App, HttpServer};
 
-use crate::resource::Resource;
-use crate::common::*;
 use crate::logging::*;
 
 mod common;
@@ -35,20 +33,13 @@ async fn main() -> std::io::Result<()>{
 
     let binding_address = "0.0.0.0:8000";
     HttpServer::new(|| App::new()
-        .app_data(
-              web::Json::<Resource>::configure(|cfg| {
-                  cfg.error_handler(|err, req| {
-                      log::error!("json extractor error, path={}, {}", req.uri(), err);
-                      BusinessError::ArgumentError.into()
-                  })
-              })
-        )
         .service(
             web::scope("/resource")
-                .route("", web::get().to(resource::list_resource))
-                .route("", web::post().to(resource::save_resource))
-                .route("{id}", web::put().to(resource::update_resource))
-                .route("{id}", web::delete().to(resource::remove_resource))
+                .route("", web::get().to(resource::get_all))
+                .route("", web::post().to(resource::save))
+                .route("{id}", web::get().to(resource::get))
+                .route("{id}", web::put().to(resource::update))
+                .route("{id}", web::delete().to(resource::delete))
         ))
         .bind(binding_address)
         .expect(&format!("Can not bind to {}", binding_address) )

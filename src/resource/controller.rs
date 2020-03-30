@@ -1,107 +1,58 @@
-use actix_web::{HttpResponse, web, HttpRequest};
-use bson::{oid::ObjectId, Document};
-use log::*;
+use actix_web::{HttpResponse, web, Error, http};
 
-use super::Resource;
-use crate::collection;
-use crate::common::*;
-use crate::resource::ResourceQuery;
+use super::{Resource, service};
 
-
-pub async fn save_resource(
+pub async fn save(
     resource: web::Json<Resource>
-) -> Result<HttpResponse, BusinessError> {
-    let article: Resource = resource.into_inner();
-    let d: Document = struct_to_document(&article).unwrap();
+) -> Result<Result<HttpResponse, HttpResponse>, Error> {
+    let resource: Resource = resource.into_inner();
+    let res = web::block(move || service::db_create_resource(resource))
+        .await
+        .map(|_result| HttpResponse::Ok().json(_result))
+        .map_err(|_| HttpResponse::new(http::StatusCode::INTERNAL_SERVER_ERROR));
+    Ok(res)
+}
 
-    let rs = collection(Resource::COLLECTION_NAME).insert_one(d, None)?;
-    let new_id: String = rs.inserted_id
-        .as_object_id()
-        .map(ObjectId::to_hex)
-        .unwrap();
-    info!("save resource, id={}", new_id);
-    Resp::ok(new_id).to_json_result()
+pub async fn get(
+    id: web::Path<String>
+) -> Result<Result<HttpResponse, HttpResponse>, Error> {
+    let res = web::block(move || service::db_read_resource(&id))
+        .await
+        .map(|_result| HttpResponse::Ok().json(_result))
+        .map_err(|_| HttpResponse::new(http::StatusCode::INTERNAL_SERVER_ERROR));
+    Ok(res)
 }
 
 
-pub async fn list_resource(
-    query: web::Json<ResourceQuery>
-) -> Result<HttpResponse, BusinessError> {
-    let query = query.into_inner();
+pub async fn get_all() -> Result<Result<HttpResponse, HttpResponse>, Error> {
+    let res = web::block(move || service::db_read_all_resources())
+        .await
+        .map(|_result| HttpResponse::Ok().json(_result))
+        .map_err(|_| HttpResponse::new(http::StatusCode::INTERNAL_SERVER_ERROR));
 
-    let mut d: Document = doc! {};
-
-    if !query.keyword.is_empty() {
-        d.insert("$or", bson::Bson::Array(vec![
-            doc! {"some_key_1": {"$regex": & query.keyword, "$options": "i"}}.into(),
-            doc! {"some_key_2": {"$regex": & query.keyword, "$options": "i"}}.into(),
-            doc! {"some_key_3": {"$regex": & query.keyword, "$options": "i"}}.into(),
-        ]));
-    }
-
-    let coll = collection("resource");
-    let cursor = coll.find(Some(d), None);
-    let result = cursor.map(|mut x| x.as_vec::<Resource>());
-    match result {
-        Ok(list) => Resp::ok(list).to_json_result(),
-        Err(e) => {
-            error!("list_resource error, {}", e);
-            return Err(BusinessError::InternalError { source: anyhow!(e) });
-        }
-    }
+    Ok(res)
 }
 
-pub async fn update_resource(
-    req: HttpRequest,
+pub async fn update(
+    id: web::Path<String>,
     resource: web::Json<Resource>
-) -> Result<HttpResponse, BusinessError> {
-    let id = req.match_info().get("id").unwrap_or("");
-
-    let oid = ObjectId::with_string(id).map_err(|e| {
-        log::error!("update_resource, can't parse id to ObjectId, {:?}", e);
-        BusinessError::ValidationError { field: "id".to_owned() }
-    })?;
-
+) -> Result<Result<HttpResponse, HttpResponse>, Error> {
     let resource = resource.into_inner();
+    let res = web::block(move || service::db_update_resource(&id, resource))
+        .await
+        .map(|_result| HttpResponse::Ok().json(_result))
+        .map_err(|_| HttpResponse::new(http::StatusCode::INTERNAL_SERVER_ERROR));
 
-    let filter = doc! {"_id" => oid};
-
-    let update = doc! {"$set": struct_to_document( & resource).unwrap()};
-
-    let effect = match collection(Resource::COLLECTION_NAME).update_one(filter, update, None) {
-        Ok(result) => {
-            info!("update resource, id={}, effect={}", id, result.modified_count);
-            result.modified_count
-        }
-        Err(e) => {
-            error!("update_resource, failed to visit db, id={}, {}", id, e);
-            return Err(BusinessError::InternalError { source: anyhow!(e) });
-        }
-    };
-
-    Resp::ok(effect).to_json_result()
+    Ok(res)
 }
 
-pub async fn remove_resource(
-    req: HttpRequest
-) -> Result<HttpResponse, BusinessError> {
-    let id = req.match_info().get("id").unwrap_or("");
-    if id.is_empty() {
-        return Err(BusinessError::ValidationError { field: "id".to_owned() });
-    }
+pub async fn delete(
+    id: web::Path<String>
+) -> Result<Result<HttpResponse, HttpResponse>, Error> {
+    let res = web::block(move || service::db_delete_resource(&id))
+        .await
+        .map(|_result| HttpResponse::Ok().json(_result))
+        .map_err(|_| HttpResponse::new(http::StatusCode::INTERNAL_SERVER_ERROR));
 
-    let filter = doc! {"_id" => ObjectId::with_string(id).unwrap()};
-
-    let effect = match collection(Resource::COLLECTION_NAME).delete_one(filter, None) {
-        Ok(result) => {
-            info!("delete resource, id={}, effect={}", id, result.deleted_count);
-            result.deleted_count
-        }
-        Err(e) => {
-            error!("remove_resource, failed to visit db, id={}, {}", id, e);
-            return Err(BusinessError::InternalError { source: anyhow!(e) });
-        }
-    };
-
-    Resp::ok(effect).to_json_result()
+    Ok(res)
 }
