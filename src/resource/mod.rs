@@ -2,8 +2,8 @@ use serde::{Serialize, Deserialize};
 use bson::oid::ObjectId;
 
 use crate::common::*;
-pub use controller::*;  // TODO check if can be omitted
-pub use service::*; // TODO check if can be omitted
+pub use controller::*;
+pub use service::*;
 
 mod controller;
 mod service;
