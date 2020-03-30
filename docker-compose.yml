@@ -7,10 +7,9 @@ services:
     depends_on:
       - example-db
     environment:
-      - "HOST:0.0.0.0"
-      - "PORT:9001"
-      - "MONGO_HOST:example-db"
-      - "MONGO_PORT:27017"
+      - PORT=9001
+      - MONGO_HOST=example-db
+      - MONGO_PORT=27017
     networks:
       - default
 
@@ -28,4 +27,4 @@ networks:
     driver: bridge
 
 volumes:
-  db:
+  example-db:

@@ -29,18 +29,14 @@ Exposes CRUD functionality for `resource`:
 
 ### Local
 1. start a `mongod` deamon locally (`mongodb://localhost:27017`)
+    1. set environment variables `MONGO_HOST` and `MONGO_PORT` the appropriate values *OR* change the dynamic `mongo_connection_string` in `db.rs` to a non dynamic value
+    2. set environment variable `PORT` to appropriate value *OR* change the dynamic `binding_address` in `main.rs` to a non dynamic value
 2. run `cargo build --release`
 3. run `./target/release/actix-mongodb-boilerplate`
 
 ### Docker
 1. run `docker-compose up --build`
 
-### API commands
-
-`curl http://localhost:3000/hello?name=joe`
-
-`Success` should be returned and `{name: "joe"}` document should have been written in `mydb` database, `users` collection.
-
 # CONTRIBUTE
 
-Feel free to contribute, you may want to add extra endpoints, benchmark against different stacks, etc.
+Feel free to contribute, you may want to add extra endpoints, benchmarks, performance or quality of life enhancements, etc.

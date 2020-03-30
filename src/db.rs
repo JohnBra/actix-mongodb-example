@@ -17,7 +17,7 @@ fn create_mongo_client() -> Client {
 fn get_connection_string() -> String {
     let host = get_env_or_panic("MONGO_HOST");  // TODO check if this is shit for performance
     let port = get_env_or_panic("MONGO_PORT");  // TODO check if this is shit for performance
-    ("mongodb://".to_owned() + &host + ":" + &port)
+    "mongodb://".to_owned() + &host + ":" + &port
 }
 
 pub fn collection(coll_name: &str) -> Collection {
