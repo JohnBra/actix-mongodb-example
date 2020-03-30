@@ -5,7 +5,7 @@ services:
     ports:
       - "9001:9001"
     depends_on:
-      - tag-data-db
+      - example-db
     networks:
       - default
 
