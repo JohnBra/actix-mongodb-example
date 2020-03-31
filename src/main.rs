@@ -2,9 +2,9 @@
 extern crate bson;
 
 use actix_web::{web, App, HttpServer};
+use std::env;
 
 use crate::logging::*;
-use crate::common::get_env_or_panic;
 
 mod common;
 mod logging;
@@ -13,7 +13,7 @@ mod db;
 
 
 fn get_binding_address() -> String {
-    let port = get_env_or_panic("PORT");
+    let port = env::var("PORT").expect("PORT env not set.");
     "0.0.0.0:".to_owned() + &port
 }
 

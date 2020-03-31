@@ -1,7 +1,6 @@
 use mongodb::{Client, Collection};
 use lazy_static::lazy_static;
-
-use crate::common::get_env_or_panic;
+use std::env;
 
 // TODO: possibly remove lazy static reference to simplify
 lazy_static! {
@@ -15,8 +14,8 @@ fn create_mongo_client() -> Client {
 }
 
 fn get_connection_string() -> String {
-    let host = get_env_or_panic("MONGO_HOST");  // TODO check if this is shit for performance
-    let port = get_env_or_panic("MONGO_PORT");  // TODO check if this is shit for performance
+    let host = env::var("MONGO_HOST").expect("MONGO_HOST env not set.");    // TODO check if this is shit for performance
+    let port = env::var("MONGO_PORT").expect("MONGO_PORT env not set.");    // TODO check if this is shit for performance
     "mongodb://".to_owned() + &host + ":" + &port
 }
 

@@ -3,15 +3,7 @@ use bson::Document;
 use bson::ordered::OrderedDocument;
 use mongodb::Cursor;
 use bson::oid::ObjectId;
-use std::env;
 
-
-pub fn get_env_or_panic(key: &str) -> String {
-    match env::var(key) {
-        Ok(val) => val,
-        Err(_e) => panic!("Couldn't interpret required '{}' env variable. Terminating...", key)
-    }
-}
 
 pub trait CursorAsVec {
     fn as_vec<'a, T: Serialize + Deserialize<'a>>(&mut self) -> Vec<T>;
