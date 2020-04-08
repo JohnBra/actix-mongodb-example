@@ -2,7 +2,7 @@
 
 A small rust web server example/boilerplate with RESTful CRUD functionality, utilizing actix web and mongdb.
 
-Inspired by [mehmetsefabalik/rust-mongodb-example](https://github.com/mehmetsefabalik/rust-mongodb-example).
+Inspired by [mehmetsefabalik/rust-mongodb-example](https://github.com/mehmetsefabalik/rust-mongodb-example) and [nintha/demo-myblog](https://github.com/nintha/demo-myblog).
 
 ## Prerequisites
 - rust and cargo installed if using local deployment
