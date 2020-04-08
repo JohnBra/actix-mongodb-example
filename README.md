@@ -5,7 +5,6 @@ A small rust web server example/boilerplate with RESTful CRUD functionality, uti
 Inspired by [mehmetsefabalik/rust-mongodb-example](https://github.com/mehmetsefabalik/rust-mongodb-example).
 
 ## Prerequisites
-- ssl installed (e. g. OpenSSL) if using local deployment
 - rust and cargo installed if using local deployment
 - docker installed if using docker deployment
 
