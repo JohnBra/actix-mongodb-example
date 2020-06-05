@@ -8,7 +8,7 @@ use crate::common::*;
 
 pub fn db_create_resource(
     resource: Resource
-) -> Result<std::option::Option<bson::ordered::OrderedDocument>, mongodb::error::Error> {
+) -> Result<std::option::Option<Resource>, mongodb::error::Error> {
     let d: Document = struct_to_document(&resource).unwrap();
     let coll = collection(Resource::COLLECTION_NAME);
     let insertion_result = coll.insert_one(d, None)?;
@@ -21,18 +21,25 @@ pub fn db_create_resource(
         Some(doc! {"_id" => ObjectId::with_string(&new_id).unwrap()}),
         None
     );
-    Ok(res.unwrap())
+
+    match res.unwrap() {
+        None => Ok(None),
+        Some(doc) => Ok(bson::from_bson(bson::Bson::Document(doc)).unwrap())
+    }
 }
 
 pub fn db_read_resource(
     id: &str
-) -> Result<std::option::Option<bson::ordered::OrderedDocument>, mongodb::error::Error> {
+) -> Result<std::option::Option<Resource>, mongodb::error::Error> {
     let coll = collection(Resource::COLLECTION_NAME);
     let res = coll.find_one(
         Some(doc! {"_id" => ObjectId::with_string(id).unwrap()}),
         None);
     info!("Retrieving resource with id: {}", id);
-    Ok(res.unwrap())
+    match res.unwrap() {
+        None => Ok(None),
+        Some(doc) => Ok(bson::from_bson(bson::Bson::Document(doc)).unwrap())
+    }
 }
 
 pub fn db_read_all_resources(
@@ -47,7 +54,7 @@ pub fn db_read_all_resources(
 pub fn db_update_resource(
     id: &str,
     resource: Resource
-) -> Result<std::option::Option<bson::ordered::OrderedDocument>, mongodb::error::Error> {
+) -> Result<std::option::Option<Resource>, mongodb::error::Error> {
     let coll = collection(Resource::COLLECTION_NAME);
     let filter = doc! {"_id" => ObjectId::with_string(id).unwrap()};
     let update_doc = doc! {"$set": struct_to_document(&resource).unwrap()};
@@ -62,7 +69,10 @@ pub fn db_update_resource(
         None
     );
     info!("Updating resource with id: {}", id);
-    Ok(res.unwrap())
+    match res.unwrap() {
+        None => Ok(None),
+        Some(doc) => Ok(bson::from_bson(bson::Bson::Document(doc)).unwrap())
+    }
 }
 
 pub fn db_delete_resource(
