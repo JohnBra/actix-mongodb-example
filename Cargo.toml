@@ -1,5 +1,5 @@
 [package]
-name = "actix-mongodb-boilerplate"
+name = "actix-mongodb-example"
 version = "0.1.0"
 authors = ["Jonathan Braat <jonathan.braat@live.com>"]
 edition = "2018"

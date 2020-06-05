@@ -5,5 +5,5 @@ COPY . .
 RUN cargo build --release
 
 FROM debian:stretch-slim
-COPY --from=builder /usr/src/app/target/release/actix-mongodb-boilerplate /bin/
-CMD actix-mongodb-boilerplate
+COPY --from=builder /usr/src/app/target/release/actix-mongodb-example /bin/
+CMD actix-mongodb-example
