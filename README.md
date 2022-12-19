@@ -1,7 +1,8 @@
 # RUST RESTful ACTIX WEB MONGODB EXAMPLE / BOILERPLATE
 
 >__Warning__
-> This example is quite old and the package versions of the libraries are outdated.
+>
+> This example is quite old and the libraries are outdated.
 > I packaged this in a Docker, so it will still work, but please consider using a more timely example.
 
 A small rust web server example/boilerplate with RESTful CRUD functionality, utilizing actix web and mongdb.
