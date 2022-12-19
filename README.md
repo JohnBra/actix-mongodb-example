@@ -3,7 +3,7 @@
 A small rust web server example/boilerplate with RESTful CRUD functionality, utilizing actix web and mongdb.
 
 >__Warning__
-> This example is quite old and the Rust version is outdated
+> This example is quite old and the Rust version is outdated.
 > I packaged this in a Docker, so it will still work, but please consider using a more timely example.
 
 
