@@ -1,0 +1,24 @@
+version: 2
+updates:
+- package-ecosystem: cargo
+  directory: "/"
+  schedule:
+    interval: weekly
+    time: "04:00"
+  open-pull-requests-limit: 10
+  reviewers:
+  - JohnBra
+  assignees:
+  - JohnBra
+  ignore:
+  - dependency-name: mongodb
+    versions:
+    - 1.1.1
+    - 1.2.0
+  - dependency-name: bson
+    versions:
+    - 1.1.0
+    - 1.2.0
+  - dependency-name: env_logger
+    versions:
+    - 0.8.2
